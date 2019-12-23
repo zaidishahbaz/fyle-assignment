@@ -1,59 +1,119 @@
 <template>
-  <div class="hello">
-    <h1>{{ msg }}</h1>
-    <p>
-      For a guide and recipes on how to configure / customize this project,<br>
-      check out the
-      <a href="https://cli.vuejs.org" target="_blank" rel="noopener">vue-cli documentation</a>.
-    </p>
-    <h3>Installed CLI Plugins</h3>
-    <ul>
-      <li><a href="https://github.com/vuejs/vue-cli/tree/dev/packages/%40vue/cli-plugin-babel" target="_blank" rel="noopener">babel</a></li>
-      <li><a href="https://github.com/vuejs/vue-cli/tree/dev/packages/%40vue/cli-plugin-router" target="_blank" rel="noopener">router</a></li>
-      <li><a href="https://github.com/vuejs/vue-cli/tree/dev/packages/%40vue/cli-plugin-eslint" target="_blank" rel="noopener">eslint</a></li>
-    </ul>
-    <h3>Essential Links</h3>
-    <ul>
-      <li><a href="https://vuejs.org" target="_blank" rel="noopener">Core Docs</a></li>
-      <li><a href="https://forum.vuejs.org" target="_blank" rel="noopener">Forum</a></li>
-      <li><a href="https://chat.vuejs.org" target="_blank" rel="noopener">Community Chat</a></li>
-      <li><a href="https://twitter.com/vuejs" target="_blank" rel="noopener">Twitter</a></li>
-      <li><a href="https://news.vuejs.org" target="_blank" rel="noopener">News</a></li>
-    </ul>
-    <h3>Ecosystem</h3>
-    <ul>
-      <li><a href="https://router.vuejs.org" target="_blank" rel="noopener">vue-router</a></li>
-      <li><a href="https://vuex.vuejs.org" target="_blank" rel="noopener">vuex</a></li>
-      <li><a href="https://github.com/vuejs/vue-devtools#vue-devtools" target="_blank" rel="noopener">vue-devtools</a></li>
-      <li><a href="https://vue-loader.vuejs.org" target="_blank" rel="noopener">vue-loader</a></li>
-      <li><a href="https://github.com/vuejs/awesome-vue" target="_blank" rel="noopener">awesome-vue</a></li>
-    </ul>
-  </div>
+  <v-container>
+    <v-app id="inspire">
+      <v-text><h2>Bank Search Table</h2></v-text>
+    <v-card>
+      <v-card-title>
+   <v-toolbar-title>
+     <v-select v-model="enabled" :items="slots" label="Cities" clearable></v-select> 
+   </v-toolbar-title>
+        <v-spacer></v-spacer>
+    
+        <v-text-field
+          v-model="search"
+         
+          label="Search"
+          single-line
+          hide-details
+        ></v-text-field>
+      </v-card-title>
+    
+      <v-data-table
+
+        :headers="headers"
+        :items="bank"
+        :search="search"
+
+      >
+     
+      </v-data-table>
+      
+    
+    </v-card>
+   
+
+
+
+
+
+  </v-app>
+
+    <v-footer
+      dark
+      padless
+    >
+      <v-card
+        class="flex"
+        flat
+        tile
+      >
+      
+  
+        <v-card-text class="py-2 white--text text-center">
+          {{ new Date().getFullYear() }} — <strong>  <a href="https://www.linkedin.com/in/shahbaz-zaidi-87b4bb144/">Shahbaz</a> </strong>
+        </v-card-text>
+      </v-card>
+    </v-footer>
+  </v-container>
+  
 </template>
 
+
+
+
+
 <script>
+import axios from 'axios';
+
 export default {
-  name: 'HelloWorld',
-  props: {
-    msg: String
-  }
+  data() {
+    return {
+       search: '',
+       text:'',
+       bank:'',
+       rate:2,
+       loading: false,
+       slots: ['Kolkata','Delhi','Mumbai'],
+      headers: [
+        
+        { text: 'IFSC',align:'center', value: 'ifsc' },
+         { text: 'BANK ID', align:'center',value: 'bank_id' },
+          { text: 'BRANCH', align:'center',value: 'branch' },
+           { text: 'ADDRESS',align:'center', value: 'address' },
+            { text: 'CITY',align:'center', value: 'city' },
+             { text: 'DISTRICT', align:'center',value: 'district' },
+              { text: 'STATE',align:'center', value: 'state' },
+               { text: 'BANK NAME',align:'center', value: 'bank_name' },
+               
+              
+               
+      
+      ],
+       icons: [
+      'fab fa-facebook',
+      'fab fa-twitter',
+      'fab fa-google-plus',
+      'fab fa-linkedin',
+      'fab fa-instagram',
+    ],
+    }
+  },
+
+
+ created(){
+
+   
+    axios.get(`https://vast-shore-74260.herokuapp.com/banks?city=MUMBAI `)
+    .then(response => {
+     
+      this.bank = response.data
+    })
+    .catch(e => {
+      this.errors.push(e)
+    })
+    this.loading = false;
+ 
+  },
+    
 }
 </script>
-
-<!-- Add "scoped" attribute to limit CSS to this component only -->
-<style scoped>
-h3 {
-  margin: 40px 0 0;
-}
-ul {
-  list-style-type: none;
-  padding: 0;
-}
-li {
-  display: inline-block;
-  margin: 0 10px;
-}
-a {
-  color: #42b983;
-}
-</style>
