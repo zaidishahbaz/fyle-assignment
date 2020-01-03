@@ -5,37 +5,26 @@
     <v-card>
       <v-card-title>
    <v-toolbar-title>
-     <v-select v-model="enabled" :items="slots" label="Cities" clearable></v-select> 
+     <v-select v-model="city" :items="cities" label="Cities" v-on:change="onChange"></v-select> 
    </v-toolbar-title>
         <v-spacer></v-spacer>
-    
         <v-text-field
-          v-model="search"
-         
+          v-model="search"  
           label="Search"
           single-line
-          hide-details
+          hide-details 
         ></v-text-field>
       </v-card-title>
-    
       <v-data-table
-
+      v-model="selected"
         :headers="headers"
         :items="bank"
         :search="search"
-
+          show-select
+          item-key="ifsc"
       >
-     
       </v-data-table>
-      
-    
     </v-card>
-   
-
-
-
-
-
   </v-app>
 
     <v-footer
@@ -68,12 +57,14 @@ import axios from 'axios';
 export default {
   data() {
     return {
+      selected: [],
        search: '',
-       text:'',
-       bank:'',
-       rate:2,
+
+      city:'MUMBAI',
+      
+       bank:'',  
        loading: false,
-       slots: ['Kolkata','Delhi','Mumbai'],
+       cities: ['KOLKATA','MUMBAI','DELHI','BANGALORE'],
       headers: [
         
         { text: 'IFSC',align:'center', value: 'ifsc' },
@@ -83,10 +74,7 @@ export default {
             { text: 'CITY',align:'center', value: 'city' },
              { text: 'DISTRICT', align:'center',value: 'district' },
               { text: 'STATE',align:'center', value: 'state' },
-               { text: 'BANK NAME',align:'center', value: 'bank_name' },
-               
-              
-               
+               { text: 'BANK NAME',align:'center', value: 'bank_name' },          
       
       ],
        icons: [
@@ -100,10 +88,16 @@ export default {
   },
 
 
- created(){
+ mounted(){
 
-   
-    axios.get(`https://vast-shore-74260.herokuapp.com/banks?city=MUMBAI `)
+ if (localStorage.selected) {
+      this.selected = JSON.parse(localStorage.selected);
+    }
+
+
+
+
+    axios.get(`https://vast-shore-74260.herokuapp.com/banks?city=${this.city} `)
     .then(response => {
      
       this.bank = response.data
@@ -111,9 +105,32 @@ export default {
     .catch(e => {
       this.errors.push(e)
     })
+    
     this.loading = false;
- 
   },
+  methods: {
+         onChange: function (){
+          
+    axios.get(`https://vast-shore-74260.herokuapp.com/banks?city=${this.city} `)
+    .then(response => {
+     
+      this.bank = response.data
+    })
+    .catch(e => {
+      this.errors.push(e)
+    })
+         }    
+    },
+  
+ watch: {
+  selected: {
+    handler() {
+      localStorage.setItem('selected',JSON.stringify(this.selected));
+    },
+    deep: true,
+  },
+},
+  
     
 }
 </script>
